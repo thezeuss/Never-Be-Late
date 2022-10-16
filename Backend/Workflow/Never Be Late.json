@@ -1,0 +1,349 @@
+{
+  "name": "Never be late",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c40d581e-5878-4dd0-a8b3-48d16e0018a0",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        180,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "d0eca05f-3a1d-4d89-846e-87a7ca5dfe7c",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "cef82d48-4c13-4555-bfcd-130ca5861d4d",
+      "name": "Notion",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2,
+      "position": [
+        300,
+        500
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "1",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "dateTime": [
+            {
+              "value1": "={{ $json[\"data\"] }}",
+              "value2": "2022-10-05T09:52:41.318Z"
+            }
+          ],
+          "boolean": [
+            {
+              "value1": "={{ $json[\"property_done\"] }}"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "29147233-808a-4a32-ae29-0b23d21ec5e3",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        780,
+        500
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "value": "={{$json[\"property_date\"].end  ||$json[\"property_date\"][\"start\"]}}",
+        "custom": true,
+        "toFormat": "=YYYY/MM/DD HH:mm:ss",
+        "options": {}
+      },
+      "id": "a53d910a-ce1d-4eff-8df9-2ff630020561",
+      "name": "Date & Time",
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 1,
+      "position": [
+        560,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "devblog1823@gmail.com",
+        "toEmail": "meshv1823@gmail.com",
+        "subject": "Pending Task list",
+        "text": "Pending List:-",
+        "html": "={{ $json[\"finalOp\"].join(' \\n') }}",
+        "options": {}
+      },
+      "id": "e8bbc7e5-8cfd-4c8c-a477-2f230901d25b",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        160
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 5,
+              "minute": 45
+            }
+          ]
+        }
+      },
+      "id": "ae1cdbd5-3a61-4483-8a69-c21051518363",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        60,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+918866643262",
+        "toWhatsapp": true,
+        "message": "= *Pending Task List {{new Date().toISOString().slice(0, 10)}} :-* \n\n{{ $json[\"finalOpForTwillio\"].join('\\n') }}",
+        "options": {}
+      },
+      "id": "748387ea-31a9-4187-9a47-0c0a32c6c076",
+      "name": "Twilio",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        400
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "3",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "aggregateItems",
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "finalOp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "55636b9d-7a88-4abc-970b-9f6ef1f4f195",
+      "name": "Item Lists",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Code here will run only once, no matter how many input items there are.\n// More info and help:https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.function/\n// Tip: You can use luxon for dates and $jmespath for querying JSON structures\n\n// Loop over inputs and add a new field called 'myNewField' to the JSON of each one\nfor (item of items) {\n  console.log(item)\n  item.json.finalOp = `<li><b>${item.json.name}</b> - ${item.json.property_date.end || item.json.property_date.start} - ${item.json.property_status}</li>`;\n  item.json.finalOpForTwillio = `*${item.json.name}* - ${item.json.property_date.end || item.json.property_date.start} - ${item.json.property_status}`;\n}\n\n// You can write logs to the browser console\nconsole.log('Done!');\n\nreturn items;"
+      },
+      "id": "8b7041a2-09a4-40c2-bb69-26727e707204",
+      "name": "Function",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sort",
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fc2dd2f5-5801-4d44-9c14-7457b3bbb0dc",
+      "name": "Item Lists1",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "aggregateItems",
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "finalOpForTwillio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c42c9c9-f9e0-4c80-9e54-de29fefe9bdf",
+      "name": "Item Lists2",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "collection": "task",
+        "options": {}
+      },
+      "id": "a7b968aa-714a-4594-b66b-8bbb437c792b",
+      "name": "MongoDB",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        20
+      ],
+      "credentials": {
+        "mongoDb": {
+          "id": "4",
+          "name": "MongoDB account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Notion": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function": {
+      "main": [
+        [
+          {
+            "node": "Item Lists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists1": {
+      "main": [
+        [
+          {
+            "node": "Item Lists",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Item Lists2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Lists2": {
+      "main": [
+        [
+          {
+            "node": "Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": 1,
+  "meta": {
+    "instanceId": "d79b3c32a860c324dbe344e9aa044a25e517e702806f23ed2ff143745d458f44"
+  },
+  "tags": []
+}

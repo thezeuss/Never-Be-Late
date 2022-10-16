@@ -9,6 +9,7 @@ import SendPasswordResetEmail from './Components/Pages/Auth/SendPasswordResetEma
 import ResetPassword from './Components/Pages/Auth/ResetPassword'
 import DashBoard from './Components/Pages/DashBoard'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import './index.css';
 
 function App() {
 
@@ -25,29 +26,29 @@ function App() {
     return (
         <>
             <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-            <LoadingBar
-                color='red'
-                progress={progress}
-                height={3}
-                onLoaderFinished={() => setprogress(0)}
-            />
+                <LoadingBar
+                    color='red'
+                    progress={progress}
+                    height={3}
+                    onLoaderFinished={() => setprogress(0)}
+                />
 
-            <BrowserRouter>
-                <Routes>
-                    <Route path='/' element={<Layout />}>
-                        <Route index element={<Home />} />
-                        <Route path='contact' element={<Contact ColorChange={ColorChange} />} />
-                        <Route path='login' element={<LoginReg ColorChange={ColorChange} />} />
-                        <Route path='sendpasswordresetemail' element={<SendPasswordResetEmail ColorChange={ColorChange} />} />
-                        <Route path='reset/:id/:token' element={<ResetPassword ColorChange={ColorChange} />} />
-                    </Route>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/' element={<Layout />}>
+                            <Route index element={<Home />} />
+                            <Route path='contact' element={<Contact ColorChange={ColorChange} />} />
+                            <Route path='login' element={<LoginReg ColorChange={ColorChange} />} />
+                            <Route path='sendpasswordresetemail' element={<SendPasswordResetEmail ColorChange={ColorChange} />} />
+                            <Route path='reset/:id/:token' element={<ResetPassword ColorChange={ColorChange} />} />
+                        </Route>
 
-                    <Route path='/dashboard' element={<DashBoard />} />
-                    <Route path='*' element={<h1>404 Page Not Found</h1>} />
-                </Routes>
+                        <Route path='/dashboard' element={<DashBoard />} />
+                        <Route path='*' element={<h1>404 Page Not Found</h1>} />
+                    </Routes>
 
-            </BrowserRouter>
-        </GoogleOAuthProvider >
+                </BrowserRouter>
+            </GoogleOAuthProvider >
         </>
     )
 }

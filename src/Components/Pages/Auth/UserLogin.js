@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
+import { GoogleLogin } from '@react-oauth/google';
 
 const UserLogin = () => {
   const navigate = useNavigate();
@@ -14,9 +15,13 @@ const UserLogin = () => {
     type: ""
   })
 
+  const responseGoogle = async (authResult) => {
+    console.log(authResult)
+    handleSubmit("", authResult.credential)
+};  
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const data = new FormData(e.currentTarget);
 
     // console.log("data", data.get("email"));
@@ -62,7 +67,16 @@ const UserLogin = () => {
         </Box>
 
         <NavLink to="/sendpasswordresetemail"> Forgot Password </NavLink>
-
+        <GoogleLogin
+                            // onSuccess={credentialResponse => {
+                            //     console.log(credentialResponse);
+                            //     console.log(jwtDecode(credentialResponse.credential))
+                            // }}
+                            onSuccess={responseGoogle}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        />
         {error.status && <Alert severity={error.type} sx={{ mt: 1 }}>{error.msg}!</Alert>}
       </Box>
     </>

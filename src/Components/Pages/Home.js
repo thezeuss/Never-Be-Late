@@ -1,11 +1,13 @@
 import React from 'react';
 import { Grid } from "@mui/material";
+import Example from '../Model';
 
 const Home = () => {
     return (
         <>
             <Grid container justifyContent="center">
                 <Grid item sm={10}>
+                <Example />
                 <video muted="" loop="" playsinline="" autoplay="" data-src="https://cdn.dribbble.com/users/997070/screenshots/6979022/media/80dad77daacd25fbb1f6d741f6159867.mp4" data-video-small="https://cdn.dribbble.com/users/997070/screenshots/6979022/media/02591b63c0b8e17dceb1bcec4e7cb5cb.mp4" data-video-medium="https://cdn.dribbble.com/users/997070/screenshots/6979022/media/bfa792a707068289469278a219be8562.mp4" data-video-large="https://cdn.dribbble.com/users/997070/screenshots/6979022/media/80dad77daacd25fbb1f6d741f6159867.mp4" src="https://cdn.dribbble.com/users/997070/screenshots/6979022/media/80dad77daacd25fbb1f6d741f6159867.mp4"></video>
                     <h1>Home Page</h1>
                     <hr />
